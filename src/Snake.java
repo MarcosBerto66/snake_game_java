@@ -23,12 +23,15 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
     private int width; 
     private int height; //Tamanho da tela/cenário
 
+    private int last_x;
+    private int last_y;
+
     public Snake(int width, int height, int x, int y){
         this.width = width;
         this.height = height;//Definindo o tamanho da cenário/tela
 
         head = new Body(width, height, x, y);
-        body = new Body[3];
+        body = new Body[7];
         for (int i = 0; i < body.length; i++) {
             body[i] = new Body(width, height, x, y);
         }//Definindo as características da cabeça e do corpo
@@ -40,6 +43,16 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
 
     public Body[] getBody(){
         return this.body;
+    }
+
+    private void crawlBody(){
+        for(Body element : body){
+            int aux_x = element.getX();
+            int aux_y = element.getY();
+            element.setLocation(last_x, last_y);
+            last_x = aux_x;
+            last_y = aux_y;
+        }
     }
 
     public void crawl() {
@@ -59,7 +72,10 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
 							JOptionPane.showMessageDialog(null, "Perdeu!!!");
 							crawl = false;
 						}
-                        Thread.sleep(speed);	
+                        last_x = head.getX();
+                        last_y = head.getY();
+                        Thread.sleep(speed);
+                        crawlBody();
                     }
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
