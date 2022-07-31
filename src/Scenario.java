@@ -17,5 +17,11 @@ public class Scenario extends JFrame{
 
     private void init() {
         snake = new Snake(getWidth(), getHeight(), 0, 0);
+        add(snake.getHead());
+        for (Body element : snake.getBody()) {
+            add(element);
+        }
+        snake.crawl();
+        addKeyListener(snake);
     }
 }
