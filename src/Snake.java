@@ -1,6 +1,8 @@
 import javax.swing.JOptionPane;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Snake implements KeyListener{ //Esta classe gerencia o comportamento da cabeça e outros elementos que compõe o corpo
     
@@ -14,11 +16,12 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
     private boolean right = false;
     private boolean bottom = false; //Status de movimento
 
-    private int speed = 400; //Velocidade de movimentação
+    private int speed = 300; //Velocidade de movimentação
     private boolean crawl = true; //Status de inicio de jogo
+    private boolean firstAction = true;
 
     private Body head; //Cabeça
-    private Body body[]; //Vetor de corpo
+    private List<Body> body = new ArrayList<>(); //Vetor de corpo
 
     private int width; 
     private int height; //Tamanho da tela/cenário
@@ -31,9 +34,9 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
         this.height = height;//Definindo o tamanho da cenário/tela
 
         head = new Body(width, height, x, y);
-        body = new Body[7];
-        for (int i = 0; i < body.length; i++) {
-            body[i] = new Body(width, height, x, y);
+        for (int i = 0; i < 4; i++) {
+            Body e = new Body(width, height, x, y);
+            body.add(e);
         }//Definindo as características da cabeça e do corpo
     }
 
@@ -41,8 +44,12 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
         return this.head;
     }
 
-    public Body[] getBody(){
+    public List<Body> getBody(){
         return this.body;
+    }
+
+    public boolean getCrawl(){
+        return this.crawl;
     }
 
     private void crawlBody(){
@@ -51,7 +58,7 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
             int aux_y = element.getY();
             element.setLocation(last_x, last_y);
             last_x = aux_x;
-            last_y = aux_y;
+            last_y = aux_y;//Alterando a posição de cada parte do corpo, pela última posição registrada
         }
     }
 
@@ -64,18 +71,19 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
                             head.setLocation(head.getX(), head.getY() - head.getHeight());
                         }else if(left == true && head.getX() > 0) {
 							head.setLocation(head.getX() - head.getWidth(), head.getY());
-						}else if(right == true && head.getX() < width) {
+						}else if(right == true && head.getX() < (width - head.getWidth())) {
 							head.setLocation(head.getX() + head.getWidth(), head.getY());
-						}else if(bottom == true && head.getY() < height) {
+						}else if(bottom == true && head.getY() < (height - head.getHeight())) {
 							head.setLocation(head.getX(), head.getY() + head.getHeight());
-						}else if(head.getX() != 0 && head.getY() != 0){
-							JOptionPane.showMessageDialog(null, "Perdeu!!!");
-							crawl = false;
+						}else{
+                            gameOver();
 						}
                         last_x = head.getX();
                         last_y = head.getY();
                         Thread.sleep(speed);
-                        crawlBody();
+                        if(crawl){
+                            crawlBody();
+                        }
                     }
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
@@ -83,6 +91,14 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
             }
         }).start();
     }
+
+    public void gameOver(){
+        if((((head.getX() + head.getWidth()) > width) || ((head.getX() - head.getWidth()) < 0) || ((head.getY() + head.getHeight()) > height) || ((head.getY() - head.getHeight()) < 0)) && firstAction == false){
+            JOptionPane.showMessageDialog(null, "Perdeu!!!");
+            crawl = false;
+        }
+    }
+
 
     @Override
     public void keyTyped(KeyEvent e) {  
@@ -101,6 +117,9 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
 			bottom = true;
 			left = false;
 			right = false;
+            if(firstAction == true){
+                firstAction = false;
+            }
 		}else if(i == LEFT) {
 			top = false;
 			bottom = false;
@@ -111,10 +130,17 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
 			bottom = false;
 			left = false;
 			right = true;
+            if(firstAction == true){
+                firstAction = false;
+            }
 		}   
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+
+    public void addNewBody() {
+        Body e = new Body(width, height, last_x, last_y);
     }
 }
