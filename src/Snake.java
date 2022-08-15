@@ -29,6 +29,9 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
     private int last_x;
     private int last_y;
 
+    private int fruit_X;
+    private int fruit_Y;
+
     public Snake(int width, int height, int x, int y){
         this.width = width;
         this.height = height;//Definindo o tamanho da cenário/tela
@@ -80,6 +83,14 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
 						}
                         last_x = head.getX();
                         last_y = head.getY();
+                        if(last_x == fruit_X && last_y == fruit_Y){
+                            System.out.println("Opa!");
+                            Scenario.hiddenFruit();
+                            //Body b = new Body(width, height, body.get(body.size() - 1).getX() + body.get(body.size() - 1).getWidth(), body.get(body.size() - 1).getY() + body.get(body.size() - 1).getHeight());
+                            Body b = new Body(width, height, last_x, last_y);
+                            body.add(b);
+                            System.out.println(body.size());
+                        }
                         Thread.sleep(speed);
                         if(crawl){
                             crawlBody();
@@ -142,5 +153,15 @@ public class Snake implements KeyListener{ //Esta classe gerencia o comportament
 
     public void addNewBody() {
         Body e = new Body(width, height, last_x, last_y);
+        body.add(e);
+    }
+
+    public int getSpeed(){
+        return speed;
+    }
+
+    public void setFruit(int x, int y){
+        this.fruit_X = x;
+        this.fruit_Y = y;
     }
 }

@@ -5,8 +5,8 @@ import javax.swing.JFrame;
 
 public class Scenario extends JFrame implements KeyListener{
 
-    private Snake snake;
-    private Fruit fruit;
+    private static Snake snake;
+    private static Fruit fruit;
     
     public Scenario() {
         setSize(500,500);
@@ -23,17 +23,25 @@ public class Scenario extends JFrame implements KeyListener{
         //Inserindo a cobra
         snake = new Snake(getWidth(), getHeight(), 0, 0);
         add(snake.getHead());
-        for (Body element : snake.getBody()) {
-            add(element);
-        }
+        addBodySnake();
+
+        fruit = new Fruit(getWidth(), getHeight(), 50, 50);
+        add(fruit);
+        snake.setFruit(fruit.getX(), fruit.getY());
+
         snake.crawl();
         addKeyListener(snake);
         addKeyListener(this);
 
-        fruit = new Fruit(snake.getHead().getWidth(), snake.getHead().getHeight(), 50, 50);
-        add(fruit);
+        
     }
 
+    public void addBodySnake(){
+        for (Body element : snake.getBody()) {
+            add(element);
+        }
+    }
+    
     @Override
     public void keyTyped(KeyEvent e) {
     }
@@ -41,18 +49,16 @@ public class Scenario extends JFrame implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {  
         //Gatilho para a inserção da fruta
-        
         new Thread(new Runnable() {
             public void run() {
                 try {
                     while(snake.getCrawl()){
-                        if(fruit.getLocation().equals(snake.getHead().getLocation())){
-                            snake.addNewBody();
-                        }
+                        addBodySnake();
                         if(fruit.isHidden()){
 
                         }
-                    }
+                        Thread.sleep(snake.getSpeed());
+                    }  
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
                 }
@@ -63,4 +69,9 @@ public class Scenario extends JFrame implements KeyListener{
     @Override
     public void keyReleased(KeyEvent e) {  
     }
+
+    public static void hiddenFruit(){
+        fruit.setVisible(false);
+    }
+
 }
